@@ -1,0 +1,23 @@
+@import "./vendor/normalize.css";
+
+@import "./vendor/fonts/fonts.css";
+
+@import "./blocks/body.css";
+
+@import "./blocks/page.css";
+
+@import "./blocks/header.css";
+
+@import "./blocks/profile.css";
+
+@import "./blocks/element.css";
+
+@import "./blocks/footer.css";
+
+@import "./blocks/modal.css";
+
+@import "./blocks/form.css";
+
+@import "./blocks/login.css";
+
+@import "./blocks/register.css";
