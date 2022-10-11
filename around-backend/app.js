@@ -2,8 +2,10 @@ const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
+
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/centralizeError');
 
@@ -13,9 +15,11 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 
 require('dotenv').config();
 
-// const nonExistRoute = require('./routes/nonExist');
-
 const app = express();
+// const nonExistRoute = require('./routes/nonExist');
+app.use(cors());
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
