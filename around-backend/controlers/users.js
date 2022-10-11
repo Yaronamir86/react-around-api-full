@@ -16,7 +16,7 @@ const Conflict = require('../errors/Conflict');
 
 // POST REQUEST
 // ROUTE = ('/signin')
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -25,14 +25,15 @@ const login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch(() => {
-      throw new Unauthoraized('incorrect email or password');
-    });
+    .catch((err) => {
+      throw new Unauthoraized(err.message);
+    })
+    .catch(next);
 };
 
 // POST REQUEST
 // ROUTE = ('/signup')
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password
   } = req.body;
@@ -54,7 +55,8 @@ const createUser = (req, res) => {
       } else {
         throw new Conflict({ DATA_EXIST_MESSAGE });
       }
-    });
+    })
+    .catch(next);
 };
 
 // GET REQUEST
