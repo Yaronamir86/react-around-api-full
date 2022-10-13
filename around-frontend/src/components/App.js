@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import Main from "./Main";
@@ -20,7 +20,7 @@ import {
 import ProtectedRoute from "./ProtectedRoute";
 import Register from "./Register";
 import InfoToolTip from "./InfoToolTip";
-import * as auth from "../utils/auth";
+import auth from "../utils/auth";
 
 function App() {
   /*----------setting all pop ups to be close----------*/
@@ -45,6 +45,8 @@ function App() {
   const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [token, setToken] = useState(localStorage.getItem("jwt"));
 
   //const [userData, setUserData] = useState({
   // email: 'email@mail.com',
@@ -82,32 +84,12 @@ function App() {
     setIsInfoToolTipOpen(false);
   };
 
-  /*------------SETTING INFO USING API-------------*/
-
-  useEffect(() => {
-    api
-      .getUserInfo()
-      .then((user) => {
-        setCurrentUser(user);
-      })
-      .catch(console.log);
-  }, []);
-
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch(console.log);
-  }, []);
-
   /*--------------------API-EDIT-HANDLERS----------------------*/
 
   const handleUpdateUser = ({ name, about }) => {
     setIsLoading(true);
     api
-      .editProfile({ name, about })
+      .editProfile({ name, about }, token)
       .then((res) => {
         setCurrentUser(res);
         closeAllModals();
@@ -118,10 +100,10 @@ function App() {
       });
   };
 
-  const handleUpdateAvatar = (url, token) => {
+  const handleUpdateAvatar = (url) => {
     setIsLoading(true);
     api
-      .editAvatar(url)
+      .editAvatar(url, token)
       .then((res) => {
         setCurrentUser(res);
         closeAllModals();
@@ -135,7 +117,7 @@ function App() {
   const handleCardLike = (card) => {
     const isLiked = card.likes.some((user) => user._id === currentUser._id);
     api
-      .changeLikeCardStatus(card._id, !isLiked)
+      .changeLikeCardStatus(card._id, !isLiked, token)
       .then((newCard) => {
         setCards((state) =>
           state.map((currentCard) =>
@@ -150,7 +132,7 @@ function App() {
     e.preventDefault();
     setIsLoading(true);
     api
-      .deleteCards(selectedCard._id)
+      .deleteCards(selectedCard._id, token)
       .then((res) => {
         const newCards = cards.filter(
           (currentCard) => currentCard._id !== selectedCard._id
@@ -167,7 +149,7 @@ function App() {
   const handleAddPlace = (card) => {
     setIsLoading(true);
     api
-      .createCards(card)
+      .createCards(card, token)
       .then((card) => {
         setCards([card, ...cards]);
         closeAllModals();
@@ -177,6 +159,26 @@ function App() {
         setIsLoading(false);
       });
   };
+
+  /*------------SETTING INFO USING API-------------*/
+
+  useEffect(() => {
+    api
+      .getUserInfo()
+      .then((user) => {
+        setCurrentUser(user);
+})
+      .catch(console.log);
+  }, []);
+
+  useEffect(() => {
+api
+      .getInitialCards()
+      .then((res) => {
+        setCards(res);
+      })
+      .catch(console.log);
+  }, [isLoggedIn]);
 
   //CHECK TOKEN
   useEffect(() => {
@@ -188,6 +190,7 @@ function App() {
           if (res) {
             setEmail(res.data.email);
             setIsLoggedIn(true);
+            setCurrentUser(res);
             history.push("/");
           } else {
             localStorage.removeItem("jwt");
@@ -223,9 +226,10 @@ function App() {
       .then((res) => {
         if (res.token) {
           setIsLoggedIn(true);
-          setEmail(email);
+          setEmail(res.data.email);
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
+          setToken(res.token);
           //after successful authorization, the user is redirected to "/"
           history.push("/");
         } else {

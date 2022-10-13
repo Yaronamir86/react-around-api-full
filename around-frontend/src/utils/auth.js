@@ -1,44 +1,63 @@
-export const BASE_URL = "https://register.nomoreparties.co";
+//export const BASE_URL = "https://yaron-amir.students.nomoredomainssbs.ru";
 
-const customFetch = (url, headers) => {
-  return fetch(url, headers).then((res) => {
-    return res.ok ? res.json() : Promise.reject(res.statusText);
-  });
-};
+class Auth {
+  constructor({ url, headers }) {
+    this.baseUrl = url;
+    this.headers = headers;
+  }
 
-export const register = (email, password) => {
-  return customFetch(`${BASE_URL}/signup`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
-};
+  _customFetch(url, headers) {
+    return fetch(url, headers).then((res) => {
+       res.ok ? res.json() : Promise.reject(res.statusText);
+    });
+  };
 
-export const login = (email, password) => {
-  return customFetch(`${BASE_URL}/signin`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  }).then((data) => {
-    //localStorage.setItem("jwt", data.jwt);
-    localStorage.setItem("email", email);
-    return data;
-  });
-};
+  register(email, password) {
+    return this._customFetch(`${this.baseUrl}/signup`, {
+      method: "POST",
+      crossorigin: true,
+        mode: "no-cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+  }
 
-export const checkToken = (token) => {
-  return customFetch(`${BASE_URL}/users/me`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
+  checkToken(token) {
+    return this._customFetch(`${this.baseUrl}/users/me`, {
+      method: "GET",
+      crossorigin: true,
+      mode: "no-cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  login(email, password) {
+    return this._customFetch(`${this.baseUrl}/signin`, {
+      method: "POST",
+      crossorigin: true,
+        mode: "no-cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    }).then((data) => {
+      //localStorage.setItem("jwt", data.jwt);
+      localStorage.setItem("email", email);
+      return data;
+    });
+  }
+}
+const auth = new Auth({
+  url: "https://api.yaron-amir.students.nomoredomainssbs.ru",
+  headers: { "Content-Type": "application/json" },
+});
+
+export default auth;

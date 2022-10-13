@@ -1,30 +1,44 @@
 class Api {
-  constructor({ baseUrl, headers }) {
+  constructor({ baseUrl }) {
     this._baseUrl = baseUrl;
-    this._headers = headers;
   }
 
-  _customFetch = (url, headers) =>
-    fetch(url, headers).then((res) =>
+  _customFetch(url, headers) {
+    return fetch(url, headers).then((res) =>
       res.ok ? res.json() : Promise.reject(res.statusText)
     );
-  //.catch(console.log);
+  }
 
-  getInitialCards() {
+  getInitialCards(token) {
     return this._customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+      },
+      crossorigin: true,
+      mode: "no-cors",
     });
   }
 
-  getUserInfo() {
+  getUserInfo(token) {
     return this._customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+      },
+      crossorigin: true,
+      mode: "no-cors",
     });
   }
 
-  editProfile({ name, about }) {
+  editProfile({ name, about }, token) {
     return this._customFetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+      },
+      crossorigin: true,
+      mode: "no-cors",
       method: "PATCH",
       body: JSON.stringify({
         name: name,
@@ -33,41 +47,66 @@ class Api {
     });
   }
 
-  editAvatar(url) {
+  editAvatar(url, token) {
     return this._customFetch(`${this._baseUrl}/users/me/avatar`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+      },
       method: "PATCH",
       body: JSON.stringify({
         avatar: url,
       }),
+      crossorigin: true,
+      mode: "no-cors",
     });
   }
 
-  createCards(data) {
+  createCards(data, token) {
     return this._customFetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+        crossorigin: true,
+        mode: "no-cors",
+      },
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  deleteCards(cardId) {
+  deleteCards(cardId, token) {
     return this._customFetch(`${this._baseUrl}/cards/${cardId}`, {
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem(token)}`,
+      },
       method: "DELETE",
+      crossorigin: true,
+      mode: "no-cors",
     });
   }
 
-  changeLikeCardStatus(cardId, isLiked) {
+  changeLikeCardStatus(cardId, isLiked, token) {
     if (isLiked) {
       return this._customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-        headers: this._headers,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem(token)}`,
+        },
         method: "PUT",
+        crossorigin: true,
+        mode: "no-cors",
       });
     } else {
       return this._customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-        headers: this._headers,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem(token)}`,
+        },
         method: "DELETE",
+        crossorigin: true,
+        mode: "no-cors",
       });
     }
   }
@@ -75,6 +114,10 @@ class Api {
 
 const api = new Api({
   baseUrl: "https://api.yaron-amir.students.nomoredomainssbs.ru",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
 });
 
 export default api;
