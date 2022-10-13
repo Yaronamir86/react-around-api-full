@@ -9,14 +9,15 @@ const {
 
 // GET REQUEST
 // ROUTE = ('/cards')
-const getCards = (req, res) =>
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch((err) => res.status(SERVER_ERROR).send(err));
+    .catch(next);
+};
 
 // POST REQUEST
 // ROUTE = ('/cards')
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const {
     name, link
   } = req.body;

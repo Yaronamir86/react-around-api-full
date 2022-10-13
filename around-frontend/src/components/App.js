@@ -20,7 +20,7 @@ import {
 import ProtectedRoute from "./ProtectedRoute";
 import Register from "./Register";
 import InfoToolTip from "./InfoToolTip";
-import auth from "../utils/auth";
+import * as auth from "../utils/auth";
 
 function App() {
   /*----------setting all pop ups to be close----------*/
@@ -163,40 +163,49 @@ function App() {
   /*------------SETTING INFO USING API-------------*/
 
   useEffect(() => {
-    api
-      .getUserInfo()
-      .then((user) => {
-        setCurrentUser(user);
-})
-      .catch(console.log);
-  }, []);
+    if (token) {
+      api
+        .getUserInfo(token)
+        .then(user => {
+          setCurrentUser(user);
+        })
+        .catch(console.log);
+    }
+  }, [token]);
 
   useEffect(() => {
-api
-      .getInitialCards()
-      .then((res) => {
-        setCards(res);
-      })
-      .catch(console.log);
-  }, [isLoggedIn]);
+    if (token) {
+      api
+        .getInitialCards(token)
+        .then(res => {
+          setCards(res);
+        })
+        .catch(console.log);
+    }
+  }, [token]);
+
 
   //CHECK TOKEN
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
     if (token) {
       auth
         .checkToken(token)
-        .then((res) => {
-          if (res) {
-            setEmail(res.data.email);
+        .then(res => {
+          if (res._id) {
             setIsLoggedIn(true);
-            setCurrentUser(res);
+            setEmail({ email: res.email });
             history.push("/");
-          } else {
-            localStorage.removeItem("jwt");
           }
         })
-        .catch((err) => console.log(err));
+        .catch(err => {
+          console.log(err);
+          history.push("/signin");
+        })
+        .finally(() => {
+          setIsCheckingToken(false);
+        });
+    } else {
+      setIsCheckingToken(false);
     }
   }, [history]);
 
@@ -226,7 +235,7 @@ api
       .then((res) => {
         if (res.token) {
           setIsLoggedIn(true);
-          setEmail(res.data.email);
+          setEmail(email);
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
           setToken(res.token);

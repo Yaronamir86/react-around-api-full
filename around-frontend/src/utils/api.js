@@ -3,10 +3,8 @@ class Api {
     this._baseUrl = baseUrl;
   }
 
-  _customFetch(url, headers) {
-    return fetch(url, headers).then((res) =>
-      res.ok ? res.json() : Promise.reject(res.statusText)
-    );
+  _customFetch(res) {
+    return res.ok ? res.json() : Promise.reject(res.statusText)
   }
 
   getInitialCards(token) {
@@ -113,7 +111,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://api.yaron-amir.students.nomoredomainssbs.ru",
+  baseUrl: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("token")}`,

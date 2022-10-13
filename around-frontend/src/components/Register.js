@@ -1,17 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 function Register({ onRegister }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [data, setData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData({
+      ...data,
+      [name]: value,
+    });
+  };
 
   function handleSubmit(e) {
     e.preventDefault();
-    const userData = {
-      email,
-      password,
-    };
-    onRegister(userData);
+    const { email, password } = data;
+    onRegister({ email, password });
   }
   return (
     <div className="register">
@@ -24,8 +31,8 @@ function Register({ onRegister }) {
             name="email"
             placeholder="Email"
             className="register__input register__input_type_email"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
+            onChange={handleChange}
+            value={data.email}
             autoComplete="on"
             required
           />
@@ -37,8 +44,8 @@ function Register({ onRegister }) {
             className="register__input register__input_type__password"
             minLength="6"
             maxLength="12"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
+            onChange={handleChange}
+            value={data.password}
             required
           />
         </fieldset>
