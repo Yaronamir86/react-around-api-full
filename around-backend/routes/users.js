@@ -26,3 +26,5 @@ router.patch('/me/avatar', auth, validateAvatar, updateAvatar);
 
 router.post('/signin', login);
 router.post('/signup', validateUser, createUser);
+
+module.exports = router;
