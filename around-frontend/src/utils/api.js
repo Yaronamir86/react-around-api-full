@@ -13,8 +13,6 @@ class Api {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem(token)}`,
       },
-      crossorigin: true,
-      mode: "no-cors",
     });
   }
 
@@ -24,8 +22,6 @@ class Api {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem(token)}`,
       },
-      crossorigin: true,
-      mode: "no-cors",
     });
   }
 
@@ -35,8 +31,6 @@ class Api {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem(token)}`,
       },
-      crossorigin: true,
-      mode: "no-cors",
       method: "PATCH",
       body: JSON.stringify({
         name: name,

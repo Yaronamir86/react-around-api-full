@@ -33,9 +33,7 @@ const login = (req, res, next) => {
 // POST REQUEST
 // ROUTE = ('/signup')
 const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password
-  } = req.body;
+  const { email, password } = req.body;
   User.findOne({ email })
     .then((user) => {
       if (user) {
@@ -46,9 +44,6 @@ const createUser = (req, res, next) => {
     })
     .then((hash) =>
       User.create({
-        name,
-        about,
-        avatar,
         email,
         password: hash,
       })
@@ -81,7 +76,7 @@ const getCurrentUser = (req, res, next) => {
 // GET REQUEST
 // ROUTE = ('/users/:_id')
 const getUserById = (req, res, next) => {
-  const { _id } = req.params;
+  const { _id } = req.user;
   userIdValidateProcess(req, res, User.findById(_id), next);
 };
 

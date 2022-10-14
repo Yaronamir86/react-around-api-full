@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -15,17 +17,18 @@ const { PORT = 3001 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
-require('dotenv').config();
-
 const app = express();
 
+const allowedOrigins = [
+  'https://yaron-amir.students.nomoredomainssbs.ru',
+  'http://api.yaron-amir.students.nomoredomainssbs.ru',
+  'http://localhost:3000',
+];
+app.use(cors(allowedOrigins));
 app.use(requestLogger);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-app.use(cors());
-app.options('*', cors());
 
 app.get('/crash-test', () => {
   setTimeout(() => {

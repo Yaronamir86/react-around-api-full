@@ -1,35 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import Footer from './Footer';
+import Header from './Header';
+import Main from './Main';
+import DeleteCardPopup from './DeleteCardPopup';
+import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
+import api from '../utils/api';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+import Login from './Login';
 import {
-  Switch,
-  Route,
-  useHistory,
-  Redirect,
-} from "react-router-dom/cjs/react-router-dom.min";
-import ProtectedRoute from "./ProtectedRoute";
-import EditAvatarPopup from "./EditAvatarPopup";
-import Header from "./Header";
-import Main from "./Main";
-import DeleteCardPopup from "./DeleteCardPopup";
-import ImagePopup from "./ImagePopup";
-import EditProfilePopup from "./EditProfilePopup";
+    Switch,
+    Route,
+    useHistory,
+    Redirect,
+} from 'react-router-dom/cjs/react-router-dom.min';
+import ProtectedRoute from './ProtectedRoute';
+import Register from './Register';
+import InfoToolTip from './InfoToolTip';
+import * as auth from '../utils/auth';
 
-import AddPlacePopup from "./AddPlacePopup";
-import Register from "./Register";
-import Login from "./Login";
-import Footer from "./Footer";
-
-import InfoToolTip from "./InfoToolTip";
-import * as auth from "../utils/auth";
-import api from "../utils/api";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
 function App() {
   /*----------setting all pop ups to be close----------*/
-  
+
   const [selectedCard, setSelectedCard] = useState({
     name: "",
     link: "",
   });
-  
+
   const [infoTooltipType, setInfoTooltipType] = useState("");
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
@@ -39,8 +38,6 @@ function App() {
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(localStorage.getItem("jwt"));
-
-  
 
   /*-----OPEN/CLOSE--HANDLERS--AND--USE-STATES---------------*/
   const [isEditProfileOpen, setEditProfileOpen] = useState(false);
@@ -184,6 +181,7 @@ function App() {
   //CHECK TOKEN
   useEffect(() => {
     if (token) {
+      console.log(token);
       auth
         .checkToken(token)
         .then((res) => {
@@ -194,6 +192,7 @@ function App() {
           }
         })
         .catch((err) => {
+          console.log(err);
           history.push("/signin");
         })
         .finally(() => {
@@ -208,7 +207,7 @@ function App() {
     auth
       .register(email, password)
       .then((res) => {
-        if (res.data._id) {
+        if (res._id) {
           setInfoTooltipType("success");
           history.push("/signin");
         } else {
@@ -231,6 +230,7 @@ function App() {
         if (res.token) {
           setIsLoggedIn(true);
           setEmail(email);
+          setCurrentUser(res.data);
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
           setToken(res.token);
