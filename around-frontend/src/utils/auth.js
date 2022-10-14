@@ -16,8 +16,6 @@ const customFetch = (url, headers) => {
 export const register = (email, password) => {
   return customFetch(`${BASE_URL}/signup`, {
     method: "POST",
-    crossorigin: true,
-        mode: "no-cors",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
@@ -29,8 +27,6 @@ export const register = (email, password) => {
 export const login = (email, password) => {
   return customFetch(`${BASE_URL}/signin`, {
     method: "POST",
-    crossorigin: true,
-        mode: "no-cors",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json"
@@ -39,11 +35,9 @@ export const login = (email, password) => {
   });
 };
 
-export const checkToken = token => {
+export const checkToken = (token) => {
   return customFetch(`${BASE_URL}/users/me`, {
     method: "GET",
-    crossorigin: true,
-        mode: "no-cors",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",

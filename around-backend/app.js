@@ -5,8 +5,6 @@ const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const limiter = require('./middlewares/limit');
-const router = require('./routes');
-// const auth = require('./middlewares/auth');
 const nonExistRoute = require('./routes/nonExist');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/centralizeError');
@@ -21,20 +19,13 @@ require('dotenv').config();
 
 const app = express();
 
-const allowedOrigins = [
-  'https://yaron-amir.students.nomoredomainssbs.ru',
-  'http://api.yaron-amir.students.nomoredomainssbs.ru',
-  'http://localhost:3000',
-];
-app.use(cors({ origin: allowedOrigins }));
 app.use(requestLogger);
 app.use(express.json());
-
-// app.use(cors());
-// app.options('*', cors());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(cors());
+app.options('*', cors());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -42,12 +33,14 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 app.use(limiter);
-// app.use(auth);
 
-app.use(router);
-app.use('/users', userRouter);
+app.use(userRouter);
 app.use('/cards', cardRouter);
 app.use('*', nonExistRoute);
 

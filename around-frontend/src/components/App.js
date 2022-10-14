@@ -1,16 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Main from "./Main";
-/*import PopupWithForm from "./PopupWithForm";*/
-import DeleteCardPopup from "./DeleteCardPopup";
-import ImagePopup from "./ImagePopup";
-import EditProfilePopup from "./EditProfilePopup";
-import api from "../utils/api";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
-import Login from "./Login";
 import {
   Switch,
   Route,
@@ -18,41 +6,50 @@ import {
   Redirect,
 } from "react-router-dom/cjs/react-router-dom.min";
 import ProtectedRoute from "./ProtectedRoute";
+import EditAvatarPopup from "./EditAvatarPopup";
+import Header from "./Header";
+import Main from "./Main";
+import DeleteCardPopup from "./DeleteCardPopup";
+import ImagePopup from "./ImagePopup";
+import EditProfilePopup from "./EditProfilePopup";
+
+import AddPlacePopup from "./AddPlacePopup";
 import Register from "./Register";
+import Login from "./Login";
+import Footer from "./Footer";
+
 import InfoToolTip from "./InfoToolTip";
 import * as auth from "../utils/auth";
-
+import api from "../utils/api";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 function App() {
   /*----------setting all pop ups to be close----------*/
+  
+  const [selectedCard, setSelectedCard] = useState({
+    name: "",
+    link: "",
+  });
+  
+  const [infoTooltipType, setInfoTooltipType] = useState("");
+  const [cards, setCards] = useState([]);
+  const [currentUser, setCurrentUser] = useState({});
+  const [email, setEmail] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
+  const history = useHistory();
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem("jwt"));
+
+  
+
+  /*-----OPEN/CLOSE--HANDLERS--AND--USE-STATES---------------*/
   const [isEditProfileOpen, setEditProfileOpen] = useState(false);
   const [isAddPlaceOpen, setAddPlaceOpen] = useState(false);
   const [isEditAvatarOpen, setEditAvatarOpen] = useState(false);
   const [isPreviewImageOpen, setPreviewImageOpen] = useState(false);
   const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState({
-    name: "",
-    link: "",
-  });
   const [isInfoToolTipOpen, setIsInfoToolTipOpen] = useState(false);
-  const [infoTooltipType, setInfoTooltipType] = useState("");
-  const [cards, setCards] = useState([]);
 
-  const [currentUser, setCurrentUser] = useState({});
-
-  const [email, setEmail] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isCheckingToken, setIsCheckingToken] = useState(true);
-  const history = useHistory();
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [token, setToken] = useState(localStorage.getItem("jwt"));
-
-  //const [userData, setUserData] = useState({
-  // email: 'email@mail.com',
-  //});
-
-  /*-----OPEN/CLOSE--HANDLERS-----------------*/
   const handleEditProfileClick = () => {
     setEditProfileOpen(true);
   };
@@ -166,7 +163,7 @@ function App() {
     if (token) {
       api
         .getUserInfo(token)
-        .then(user => {
+        .then((user) => {
           setCurrentUser(user);
         })
         .catch(console.log);
@@ -177,28 +174,26 @@ function App() {
     if (token) {
       api
         .getInitialCards(token)
-        .then(res => {
+        .then((res) => {
           setCards(res);
         })
         .catch(console.log);
     }
   }, [token]);
 
-
   //CHECK TOKEN
   useEffect(() => {
     if (token) {
       auth
         .checkToken(token)
-        .then(res => {
+        .then((res) => {
           if (res._id) {
             setIsLoggedIn(true);
             setEmail({ email: res.email });
             history.push("/");
           }
         })
-        .catch(err => {
-          console.log(err);
+        .catch((err) => {
           history.push("/signin");
         })
         .finally(() => {

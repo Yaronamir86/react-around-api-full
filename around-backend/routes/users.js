@@ -18,13 +18,13 @@ const {
   validateId,
 } = require('../middlewares/validation');
 
-router.get('/', getUsers);
-router.get('/me', auth, getCurrentUser);
-router.get('/:_id', validateId, getUserById);
-router.patch('/me', auth, validateUserName, updateUser);
-router.patch('/me/avatar', auth, validateAvatar, updateAvatar);
-
 router.post('/signin', login);
 router.post('/signup', validateUser, createUser);
+
+router.get('/users/', getUsers);
+router.get('/users/me', auth, getCurrentUser);
+router.patch('/users/me', auth, validateUserName, updateUser);
+router.patch('/users/me/avatar', auth, validateAvatar, updateAvatar);
+router.get('/users/:_id', validateId, getUserById);
 
 module.exports = router;

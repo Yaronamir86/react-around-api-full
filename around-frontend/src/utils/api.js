@@ -55,8 +55,6 @@ class Api {
       body: JSON.stringify({
         avatar: url,
       }),
-      crossorigin: true,
-      mode: "no-cors",
     });
   }
 
@@ -65,8 +63,6 @@ class Api {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem(token)}`,
-        crossorigin: true,
-        mode: "no-cors",
       },
       method: "POST",
       body: JSON.stringify(data),
@@ -80,8 +76,6 @@ class Api {
         Authorization: `Bearer ${localStorage.getItem(token)}`,
       },
       method: "DELETE",
-      crossorigin: true,
-      mode: "no-cors",
     });
   }
 
@@ -93,8 +87,6 @@ class Api {
           Authorization: `Bearer ${localStorage.getItem(token)}`,
         },
         method: "PUT",
-        crossorigin: true,
-        mode: "no-cors",
       });
     } else {
       return this._customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
@@ -103,8 +95,6 @@ class Api {
           Authorization: `Bearer ${localStorage.getItem(token)}`,
         },
         method: "DELETE",
-        crossorigin: true,
-        mode: "no-cors",
       });
     }
   }
