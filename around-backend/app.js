@@ -6,12 +6,14 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const limiter = require('./middlewares/limit');
 const router = require('./routes');
-const auth = require('./middlewares/auth');
+// const auth = require('./middlewares/auth');
 const nonExistRoute = require('./routes/nonExist');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/centralizeError');
+const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
@@ -42,8 +44,11 @@ app.get('/crash-test', () => {
 
 app.use(helmet());
 app.use(limiter);
-app.use(auth);
+// app.use(auth);
+
 app.use(router);
+app.use('/users', userRouter);
+app.use('/cards', cardRouter);
 app.use('*', nonExistRoute);
 
 app.use(errorLogger);
