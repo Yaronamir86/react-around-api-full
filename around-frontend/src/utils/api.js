@@ -3,103 +3,107 @@ class Api {
     this._baseUrl = baseUrl;
   }
 
-  _customFetch(res) {
-    return res.ok ? res.json() : Promise.reject(res.statusText)
+  _checkResponse(res) {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Error ${res.status}`);
   }
 
   getInitialCards(token) {
-    return this._customFetch(`${this._baseUrl}/cards`, {
+    return fetch(`${this._baseUrl}/cards`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
-      },
-    });
+        Authorization: `Bearer ${token}`
+      }
+    }).then(this._checkResponse);
   }
 
   getUserInfo(token) {
-    return this._customFetch(`${this._baseUrl}/users/me`, {
+    return fetch(`${this._baseUrl}/users/me`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
-      },
-    });
+        Authorization: `Bearer ${token}`
+      }
+    }).then(this._checkResponse);
   }
 
   editProfile({ name, about }, token) {
-    return this._customFetch(`${this._baseUrl}/users/me`, {
+    return fetch(`${this._baseUrl}/users/me`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
+        Authorization: `Bearer ${token}`
       },
       method: "PATCH",
       body: JSON.stringify({
         name: name,
-        about: about,
-      }),
-    });
+        about: about
+      })
+    }).then(this._checkResponse);
   }
 
   editAvatar(url, token) {
-    return this._customFetch(`${this._baseUrl}/users/me/avatar`, {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
+        Authorization: `Bearer ${token}`
       },
       method: "PATCH",
       body: JSON.stringify({
-        avatar: url,
-      }),
-    });
+        avatar: url
+      })
+    }).then(this._checkResponse);
   }
 
   createCards(data, token) {
-    return this._customFetch(`${this._baseUrl}/cards`, {
+    return fetch(`${this._baseUrl}/cards`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
+        Authorization: `Bearer ${token}`
       },
       method: "POST",
-      body: JSON.stringify(data),
-    });
+      body: JSON.stringify(data)
+    }).then(this._checkResponse);
   }
 
-  deleteCards(cardId, token) {
-    return this._customFetch(`${this._baseUrl}/cards/${cardId}`, {
+  deleteCard(cardId, token) {
+  return fetch(`${this._baseUrl}/cards/${cardId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    method: "DELETE"
+  }).then(this._checkResponse);
+}
+
+
+changeLikeCardStatus(cardId, isLiked, token) {
+  if (!isLiked) {
+    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem(token)}`,
+        Authorization: `Bearer ${token}`
       },
-      method: "DELETE",
-    });
+      method: "PUT"
+    }).then(this._checkResponse);
+  } else {
+    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      method: "DELETE"
+    }).then(this._checkResponse);
   }
-
-  changeLikeCardStatus(cardId, isLiked, token) {
-    if (isLiked) {
-      return this._customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem(token)}`,
-        },
-        method: "PUT",
-      });
-    } else {
-      return this._customFetch(`${this._baseUrl}/cards/likes/${cardId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem(token)}`,
-        },
-        method: "DELETE",
-      });
-    }
-  }
+}
 }
 
 const api = new Api({
   baseUrl: "http://localhost:3001",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
 });
 
+
 export default api;
+
+
+

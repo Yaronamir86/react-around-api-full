@@ -69,7 +69,7 @@ const getUsers = (req, res, next) => {
 // GET REQUEST
 // ROUTE = ('/users/me')
 const getCurrentUser = (req, res, next) => {
-  const { _id } = req.params;
+  const { _id } = req.user;
   userIdValidateProcess(req, res, User.findById(_id), next);
 };
 

@@ -18,6 +18,7 @@ function Register({ onRegister }) {
   function handleSubmit(e) {
     e.preventDefault();
     const { email, password } = data;
+    console.log(data)
     onRegister({ email, password });
   }
   return (

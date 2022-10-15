@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import Footer from './Footer';
-import Header from './Header';
-import Main from './Main';
-import DeleteCardPopup from './DeleteCardPopup';
-import ImagePopup from './ImagePopup';
-import EditProfilePopup from './EditProfilePopup';
-import api from '../utils/api';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import EditAvatarPopup from './EditAvatarPopup';
-import AddPlacePopup from './AddPlacePopup';
-import Login from './Login';
+import React, { useState, useEffect } from "react";
+import Footer from "./Footer";
+import Header from "./Header";
+import Main from "./Main";
+import DeleteCardPopup from "./DeleteCardPopup";
+import ImagePopup from "./ImagePopup";
+import EditProfilePopup from "./EditProfilePopup";
+import api from "../utils/api";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import Login from "./Login";
 import {
-    Switch,
-    Route,
-    useHistory,
-    Redirect,
-} from 'react-router-dom/cjs/react-router-dom.min';
-import ProtectedRoute from './ProtectedRoute';
-import Register from './Register';
-import InfoToolTip from './InfoToolTip';
-import * as auth from '../utils/auth';
+  Switch,
+  Route,
+  useHistory,
+  Redirect,
+} from "react-router-dom/cjs/react-router-dom.min";
+import ProtectedRoute from "./ProtectedRoute";
+import Register from "./Register";
+import InfoToolTip from "./InfoToolTip";
+import * as auth from "../utils/auth";
 
 function App() {
   /*----------setting all pop ups to be close----------*/
@@ -180,12 +180,13 @@ function App() {
 
   //CHECK TOKEN
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (token) {
-      console.log(token);
+      const token = localStorage.getItem("token");
       auth
         .checkToken(token)
         .then((res) => {
-          if (res._id) {
+          if (res) {
             setIsLoggedIn(true);
             setEmail({ email: res.email });
             history.push("/");
@@ -216,9 +217,10 @@ function App() {
         }
       })
       .catch((err) => {
+        console.log(err)
         setInfoTooltipType("fail");
       })
-      .finally((res) => {
+      .finally(() => {
         setIsInfoToolTipOpen(true);
       });
   }
@@ -228,14 +230,17 @@ function App() {
       .login(email, password)
       .then((res) => {
         if (res.token) {
+          console.log(res.token)
           setIsLoggedIn(true);
           setEmail(email);
           setCurrentUser(res.data);
+          console.log(res.data)
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
           setToken(res.token);
           //after successful authorization, the user is redirected to "/"
           history.push("/");
+          console.log(isLoggedIn)
         } else {
           //invalid data
           setInfoTooltipType("fail");
@@ -252,6 +257,7 @@ function App() {
     //when the 'onSignOut()' handler is call, the jwt is deleted
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
+    console.log(isLoggedIn)
     history.push("/signin");
   }
 
