@@ -38,7 +38,7 @@ const createCard = (req, res, next) => {
 // DELETE REQUEST
 // ROUTE = ('/cards/:_id')
 const deleteCardById = (req, res) => {
-  const { _id } = req.params;
+  const { _id } = req.user;
   cardIdValidateProcess(
     req,
     res,

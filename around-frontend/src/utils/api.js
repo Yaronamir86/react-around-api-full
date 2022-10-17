@@ -77,13 +77,13 @@ class Api {
   }
 
   changeLikeCardStatus(cardId, isLiked, token) {
-    if (isLiked) {
+    if (!isLiked) {
       return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        method: "DELETE",
+        method: "PUT",
       }).then(this._checkResponse);
     } else {
       return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
@@ -91,7 +91,7 @@ class Api {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        method: "PUT",
+        method: "DELETE",
       }).then(this._checkResponse);
     }
   }

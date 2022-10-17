@@ -93,7 +93,7 @@ function App() {
           }
         })
         .catch((err) => {
-          console.log(err('problem here3'));
+          console.log(err)
           history.push("/signin");
         })
         .finally(() => {
@@ -105,6 +105,7 @@ function App() {
   }, [history]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (token) {
       api
         .getUserInfo(token)
@@ -159,30 +160,29 @@ function App() {
   };
 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((id) => id === currentUser._id);
-    console.log(!isLiked);
-    console.log(card);
-    console.log(currentUser);
+    const isLiked = card.likes.some((user) => user.id === currentUser._id);
     setIsLoading(true);
     api
-      .changeLikeCardStatus(card._id, !isLiked, token)
+      .changeLikeCardStatus(card._id, isLiked, token)
       .then((newCard) => {
+        console.log('changed like');
         setCards((state) =>
           state.map(currentCard => {
             return currentCard._id === card._id ? newCard : currentCard;
           })
         );
       })
-      .catch((err) => {
-        console.log('problem in like');
+      .catch(() => {
+       (console.log('problem in like'))
       });
   };
 
   const handleCardDelete = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log(selectedCard._id);
     api
-      .deleteCards(selectedCard._id, token)
+      .deleteCard(selectedCard._id, token)
       .then((res) => {
         const newCards = cards.filter(
           (currentCard) => currentCard._id !== selectedCard._id
@@ -201,7 +201,7 @@ function App() {
     api
       .createCards(card, token)
       .then((card) => {
-        setCards([card, ...cards]);
+        setCards([card.data, ...cards]);
         closeAllModals();
       })
       .catch(console.log)
@@ -240,17 +240,14 @@ function App() {
       .login(email, password)
       .then((res) => {
         if (res.token) {
-          console.log(res.token);
           setEmail(email);
           setCurrentUser(res.data);
           setIsLoggedIn(true);
-          console.log(res.data);
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
           setToken(res.token);
           //after successful authorization, the user is redirected to "/"
           history.push("/");
-          console.log(isLoggedIn);
           
         } else {
           setInfoTooltipType("fail");
@@ -260,7 +257,6 @@ function App() {
       .catch((err) => {
         setInfoTooltipType("fail");
         setIsInfoToolTipOpen(true);
-        console.log('error in login');
       });
   }
 
@@ -268,7 +264,6 @@ function App() {
     //when the 'onSignOut()' handler is call, the jwt is deleted
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
-    console.log(isLoggedIn);
     history.push("/signin");
   }
 

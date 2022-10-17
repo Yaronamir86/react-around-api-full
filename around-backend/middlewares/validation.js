@@ -31,7 +31,7 @@ const validateUserName = celebrate({
 
 const validateId = celebrate({
   [Segments.PARAMS]: Joi.object().keys({
-    cardId: Joi.string()
+    _id: Joi.string()
       .required()
       .custom((value, helpers) => {
         if (ObjectId.isValid(value)) {
