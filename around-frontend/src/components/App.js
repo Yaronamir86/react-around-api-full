@@ -78,8 +78,58 @@ function App() {
     setIsInfoToolTipOpen(false);
   };
 
-  /*--------------------API-EDIT-HANDLERS----------------------*/
+  //CHECK TOKEN
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const token = localStorage.getItem("token");
+      auth
+        .checkToken(token)
+        .then((res) => {
+          if (res._id) {
+            setIsLoggedIn(true);
+            setEmail({ email: res.email });
+            history.push("/");
+          }
+        })
+        .catch((err) => {
+          console.log(err('problem here3'));
+          history.push("/signin");
+        })
+        .finally(() => {
+          setIsCheckingToken(false);
+        });
+    } else {
+      setIsCheckingToken(false);
+    }
+  }, [history]);
 
+  useEffect(() => {
+    if (token) {
+      api
+        .getUserInfo(token)
+        .then((res) => {
+          setCurrentUser(res);
+        })
+        .catch(console.log('problem here1'));
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      api
+        .getInitialCards(token)
+        .then((res) => {
+          setCards(res);
+        })
+        .catch(console.log('problem here2'));
+    }
+  }, [token]);
+
+  
+
+  /*--------------------API-EDIT-HANDLERS----------------------*/
+  
   const handleUpdateUser = ({ name, about }) => {
     setIsLoading(true);
     api
@@ -109,17 +159,23 @@ function App() {
   };
 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((user) => user._id === currentUser._id);
+    const isLiked = card.likes.some((id) => id === currentUser._id);
+    console.log(!isLiked);
+    console.log(card);
+    console.log(currentUser);
+    setIsLoading(true);
     api
       .changeLikeCardStatus(card._id, !isLiked, token)
       .then((newCard) => {
         setCards((state) =>
-          state.map((currentCard) =>
-            currentCard._id === card._id ? newCard : currentCard
-          )
+          state.map(currentCard => {
+            return currentCard._id === card._id ? newCard : currentCard;
+          })
         );
       })
-      .catch(console.log);
+      .catch((err) => {
+        console.log('problem in like');
+      });
   };
 
   const handleCardDelete = (e) => {
@@ -156,53 +212,7 @@ function App() {
 
   /*------------SETTING INFO USING API-------------*/
 
-  useEffect(() => {
-    if (token) {
-      api
-        .getUserInfo(token)
-        .then((user) => {
-          setCurrentUser(user);
-        })
-        .catch(console.log);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      api
-        .getInitialCards(token)
-        .then((res) => {
-          setCards(res);
-        })
-        .catch(console.log);
-    }
-  }, [token]);
-
-  //CHECK TOKEN
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const token = localStorage.getItem("token");
-      auth
-        .checkToken(token)
-        .then((res) => {
-          if (res) {
-            setIsLoggedIn(true);
-            setEmail({ email: res.email });
-            history.push("/");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          history.push("/signin");
-        })
-        .finally(() => {
-          setIsCheckingToken(false);
-        });
-    } else {
-      setIsCheckingToken(false);
-    }
-  }, [history]);
+ 
 
   function onRegister({ email, password }) {
     auth
@@ -217,7 +227,7 @@ function App() {
         }
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         setInfoTooltipType("fail");
       })
       .finally(() => {
@@ -230,19 +240,19 @@ function App() {
       .login(email, password)
       .then((res) => {
         if (res.token) {
-          console.log(res.token)
-          setIsLoggedIn(true);
+          console.log(res.token);
           setEmail(email);
           setCurrentUser(res.data);
-          console.log(res.data)
+          setIsLoggedIn(true);
+          console.log(res.data);
           //when the 'onLogin()' handler is called the jwt is saved
           localStorage.setItem("jwt", res.token);
           setToken(res.token);
           //after successful authorization, the user is redirected to "/"
           history.push("/");
-          console.log(isLoggedIn)
+          console.log(isLoggedIn);
+          
         } else {
-          //invalid data
           setInfoTooltipType("fail");
           setIsInfoToolTipOpen(true);
         }
@@ -250,6 +260,7 @@ function App() {
       .catch((err) => {
         setInfoTooltipType("fail");
         setIsInfoToolTipOpen(true);
+        console.log('error in login');
       });
   }
 
@@ -257,7 +268,7 @@ function App() {
     //when the 'onSignOut()' handler is call, the jwt is deleted
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
-    console.log(isLoggedIn)
+    console.log(isLoggedIn);
     history.push("/signin");
   }
 
@@ -287,10 +298,7 @@ function App() {
               <Register onRegister={onRegister} />
             </Route>
             <Route path="/signin">
-              <Login
-                onLogin={onLogin}
-                setIsCheckingToken={setIsCheckingToken}
-              />
+              <Login onLogin={onLogin} />
             </Route>
             <Route>
               {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}

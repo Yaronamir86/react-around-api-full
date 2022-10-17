@@ -1,4 +1,4 @@
-const { celebrate, Joi, } = require('celebrate');
+const { celebrate, Joi, Segments } = require('celebrate');
 const validator = require('validator');
 const { ObjectId } = require('mongoose').Types;
 
@@ -14,9 +14,12 @@ const validateUser = celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom(validateURL),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  })
+    email: Joi.string().required().email().message('Valid email is required'),
+    password: Joi.string().required().min(8).messages({
+      'string.empty': 'Password is required',
+      'string.min': 'Password must be at least 8 characters long',
+    }),
+  }),
 });
 
 const validateUserName = celebrate({
@@ -27,7 +30,7 @@ const validateUserName = celebrate({
 });
 
 const validateId = celebrate({
-  params: Joi.object().keys({
+  [Segments.PARAMS]: Joi.object().keys({
     cardId: Joi.string()
       .required()
       .custom((value, helpers) => {
