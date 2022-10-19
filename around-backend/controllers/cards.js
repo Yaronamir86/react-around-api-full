@@ -2,10 +2,15 @@ const Card = require('../models/card');
 const {
   CREATE,
   INVALID_DATA,
+  UNAUTHORIZED,
   SERVER_ERROR,
   SERVER_ERROR_MESSAGE,
+  UNAUTHORIZED_MESSAGE,
+  CARD_NOT_FOUND_MESSAGE,
   cardIdValidateProcess,
 } = require('../utils/constants');
+
+const NotFound = require('../errors/NotFound-err');
 
 // GET REQUEST
 // ROUTE = ('/cards')
@@ -37,15 +42,27 @@ const createCard = (req, res, next) => {
 
 // DELETE REQUEST
 // ROUTE = ('/cards/:_id')
-const deleteCardById = (req, res) => {
-  const { _id } = req.user;
-  cardIdValidateProcess(
-    req,
-    res,
-    Card.findByIdAndRemove(
-      _id,
-    )
-  );
+const deleteCardById = (req, res, next) => {
+  const cardId = req.params._id;
+  const user = req.user._id;
+  Card.findById(cardId)
+    .orFail()
+    .then((card) => {
+      const { owner } = card;
+      // eslint-disable-next-line eqeqeq
+      if (owner != user) {
+        return res
+          .status(UNAUTHORIZED)
+          .send(UNAUTHORIZED_MESSAGE);
+      }
+      return Card.findByIdAndRemove(cardId).then(() => res.send(card));
+    })
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        throw new NotFound(CARD_NOT_FOUND_MESSAGE);
+      }
+    })
+    .catch(next);
 };
 
 // PUT REQUEST

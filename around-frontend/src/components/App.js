@@ -88,7 +88,7 @@ function App() {
         .then((res) => {
           if (res._id) {
             setIsLoggedIn(true);
-            setEmail({ email: res.email });
+            setEmail(res.email);
             history.push("/");
           }
         })
@@ -112,7 +112,7 @@ function App() {
         .then((res) => {
           setCurrentUser(res);
         })
-        .catch(console.log('problem here1'));
+        .catch((err) => console.log(err));
     }
   }, [token]);
 
@@ -123,7 +123,7 @@ function App() {
         .then((res) => {
           setCards(res);
         })
-        .catch(console.log('problem here2'));
+        .catch((err) => console.log(err));
     }
   }, [token]);
 
@@ -165,22 +165,20 @@ function App() {
     api
       .changeLikeCardStatus(card._id, isLiked, token)
       .then((newCard) => {
-        console.log('changed like');
         setCards((state) =>
           state.map(currentCard => {
             return currentCard._id === card._id ? newCard : currentCard;
           })
         );
       })
-      .catch(() => {
-       (console.log('problem in like'))
+      .catch((err) => {
+       (console.log(err))
       });
   };
 
   const handleCardDelete = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log(selectedCard._id);
     api
       .deleteCard(selectedCard._id, token)
       .then((res) => {
