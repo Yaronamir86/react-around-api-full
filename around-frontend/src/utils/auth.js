@@ -1,11 +1,11 @@
-export const BASE_URL = "http://localhost:3001";
+//export const BASE_URL = "http://localhost:3001";
 
-//let node_env = "production";
+let node_env = "production";
 
-//let BASE_URL =
-//  node_env === "production"
-//    ? "https://api.yaron-amir.students.nomoredomainssbs.ru"
-//    : "http://localhost:3000";
+let BASE_URL =
+  node_env === "production"
+    ? "https://api.yaron-amir.students.nomoredomainssbs.ru"
+    : "http://localhost:3000";
 
 const customFetch = (url, headers) => {
   return fetch(url, headers).then(res =>
