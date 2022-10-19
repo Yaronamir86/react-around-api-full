@@ -23,12 +23,12 @@ const getCards = (req, res, next) => {
 // POST REQUEST
 // ROUTE = ('/cards')
 const createCard = (req, res, next) => {
-  const {
-    name, link
-  } = req.body;
+  const { name, link } = req.body;
   const { _id } = req.user;
   Card.create({
-    name, link, owner: _id
+    name,
+    link,
+    owner: _id,
   })
     .then((card) => res.status(CREATE).send({ data: card }))
     .catch((err) => {
@@ -51,9 +51,7 @@ const deleteCardById = (req, res, next) => {
       const { owner } = card;
       // eslint-disable-next-line eqeqeq
       if (owner != user) {
-        return res
-          .status(UNAUTHORIZED)
-          .send(UNAUTHORIZED_MESSAGE);
+        return res.status(UNAUTHORIZED).send(UNAUTHORIZED_MESSAGE);
       }
       return Card.findByIdAndRemove(cardId).then(() => res.send(card));
     })
@@ -67,7 +65,7 @@ const deleteCardById = (req, res, next) => {
 
 // PUT REQUEST
 // ROUTE = ('/cards/:_id/likes')
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   const cardId = req.params._id;
   const userId = req.user._id;
   cardIdValidateProcess(
@@ -78,23 +76,24 @@ const likeCard = (req, res) => {
       { $addToSet: { likes: userId } },
       { new: true }
     )
-  );
+  ).catch(next);
 };
 
 // DELETE REQUEST, ROUTE = ('/cards/:_id/likes')
-const disLikeCard = (req, res) => {
+const disLikeCard = (req, res, next) => {
   const cardId = req.params._id;
   const userId = req.user._id;
   cardIdValidateProcess(
     req,
     res,
-    Card.findByIdAndUpdate(
-      cardId,
-      { $pull: { likes: userId } },
-      { new: true })
-  );
+    Card.findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
+  ).catch(next);
 };
 
 module.exports = {
-  getCards, createCard, deleteCardById, likeCard, disLikeCard
+  getCards,
+  createCard,
+  deleteCardById,
+  likeCard,
+  disLikeCard,
 };
