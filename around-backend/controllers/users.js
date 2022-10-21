@@ -1,3 +1,4 @@
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -51,7 +52,7 @@ const createUser = (req, res, next) => {
     .then((data) => res.status(CREATE).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest({ INVALID_DATA_MESSAGE });
+        throw new BadRequest(INVALID_DATA_MESSAGE);
       } else {
         next(err);
       }

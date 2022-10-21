@@ -117,6 +117,7 @@ function App() {
   }, [token]);
 
   useEffect(() => {
+    console.log(token)
     if (token) {
       api
         .getInitialCards(token)
