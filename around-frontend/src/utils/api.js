@@ -98,7 +98,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "http://api.yaron-amir.students.nomoredomainssbs.ru",
+  baseUrl: "http://localhost:3000",
 });
 
 export default api;

@@ -80,9 +80,9 @@ function App() {
 
   //CHECK TOKEN
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("jwt");
     if (token) {
-      const token = localStorage.getItem("token");
+     // const token = localStorage.getItem("jwt");
       auth
         .checkToken(token)
         .then((res) => {
@@ -105,7 +105,7 @@ function App() {
   }, [history]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+   // const token = localStorage.getItem("jwt");
     if (token) {
       api
         .getUserInfo(token)
@@ -218,6 +218,7 @@ function App() {
       .then((res) => {
         if (res._id) {
           setInfoTooltipType("success");
+          console.log(res);
           history.push("/signin");
         } else {
           //invalid data
@@ -239,6 +240,7 @@ function App() {
       .then((res) => {
         if (res.token) {
           setEmail(email);
+          console.log(res.token);
           setCurrentUser(res.data);
           setIsLoggedIn(true);
           //when the 'onLogin()' handler is called the jwt is saved
