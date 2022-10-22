@@ -2,6 +2,14 @@ const { celebrate, Joi, Segments } = require('celebrate');
 const validator = require('validator');
 const { ObjectId } = require('mongoose').Types;
 
+const {
+  MIN_STR_MESSAGE,
+  MAX_STR_MESSAGE,
+  EMPTY_STR_MESSAGE,
+  VALID_EMAIL_MESSAGE,
+  VALID_URL_MESSAGE
+} = require('../utils/constants');
+
 const validateURL = (value, helpers) => {
   if (validator.isURL(value)) {
     return value;
@@ -11,12 +19,18 @@ const validateURL = (value, helpers) => {
 
 const validateUser = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().custom(validateURL),
-    email: Joi.string().required().email().message('Valid email is required'),
+    name: Joi.string().min(2).max(30).messages({
+      'string.min': (MIN_STR_MESSAGE),
+      'string.max': (MAX_STR_MESSAGE),
+    }),
+    about: Joi.string().min(2).max(30).messages({
+      'string.min': (MIN_STR_MESSAGE),
+      'string.max': (MAX_STR_MESSAGE),
+    }),
+    avatar: Joi.string().custom(validateURL).message(VALID_URL_MESSAGE),
+    email: Joi.string().required().email().message(VALID_EMAIL_MESSAGE),
     password: Joi.string().required().min(8).messages({
-      'string.empty': 'Password is required',
+      'string.empty': (EMPTY_STR_MESSAGE),
       'string.min': 'Password must be at least 8 characters long',
     }),
   }),
@@ -24,8 +38,14 @@ const validateUser = celebrate({
 
 const validateUserName = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).messages({
+      'string.min': (MIN_STR_MESSAGE),
+      'string.max': (MAX_STR_MESSAGE),
+    }),
+    about: Joi.string().min(2).max(30).messages({
+      'string.min': (MIN_STR_MESSAGE),
+      'string.max': (MAX_STR_MESSAGE),
+    }),
   }),
 });
 
@@ -44,14 +64,22 @@ const validateId = celebrate({
 
 const validateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().custom(validateURL),
+    avatar: Joi.string().required().custom(validateURL).message(VALID_URL_MESSAGE),
   }),
 });
 
 const validateCard = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    link: Joi.string().required().custom(validateURL),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        'string.empty': (EMPTY_STR_MESSAGE),
+        'string.min': (MIN_STR_MESSAGE),
+        'string.max': (MAX_STR_MESSAGE),
+      }),
+    link: Joi.string().required().custom(validateURL).messages({
+      'string.empty': (EMPTY_STR_MESSAGE),
+      'string.uri': (VALID_URL_MESSAGE),
+    }),
     owner: Joi.object(),
     likes: Joi.array(),
     createdAt: Joi.date(),
