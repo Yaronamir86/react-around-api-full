@@ -1,16 +1,15 @@
 const Card = require('../models/card');
 const {
   CREATE,
-  INVALID_DATA,
-  UNAUTHORIZED,
-  SERVER_ERROR,
-  SERVER_ERROR_MESSAGE,
-  UNAUTHORIZED_MESSAGE,
+  INVALID_DATA_MESSAGE,
+  FORBIDDEN_MESSAGE,
   CARD_NOT_FOUND_MESSAGE,
   cardIdValidateProcess,
 } = require('../utils/constants');
 
 const NotFound = require('../errors/NotFound-err');
+const BadRequest = require('../errors/BadRequest');
+const Forbidden = require('../errors/Forbidden');
 
 // GET REQUEST
 // ROUTE = ('/cards')
@@ -33,11 +32,10 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(CREATE).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(INVALID_DATA).send({ error: err.message });
-      } else {
-        res.status(SERVER_ERROR).send({ error: SERVER_ERROR_MESSAGE });
+        throw new BadRequest(INVALID_DATA_MESSAGE);
       }
-    });
+    })
+    .catch(next);
 };
 
 // DELETE REQUEST
@@ -51,7 +49,7 @@ const deleteCardById = (req, res, next) => {
       const { owner } = card;
       // eslint-disable-next-line eqeqeq
       if (owner != user) {
-        return res.status(UNAUTHORIZED).send(UNAUTHORIZED_MESSAGE);
+        throw new Forbidden(FORBIDDEN_MESSAGE);
       }
       return Card.findByIdAndRemove(cardId).then(() => res.send(card));
     })
